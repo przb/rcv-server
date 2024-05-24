@@ -1,61 +1,29 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sashabaranov/go-fastapi"
+	"github.com/przb/rcv-server/api"
 )
 
-type EchoInput struct {
-	Phrase string `json:"phrase"`
-}
+func setupRouter() *gin.Engine {
+	// Disable Console Color
+	// gin.DisableConsoleColor()
+	r := gin.Default()
 
-type EchoOutput struct {
-	OriginalInput EchoInput `json:"original_input"`
-}
+	// Ping test
+	r.GET("/ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "pong")
+	})
 
-func EchoHandler(ctx *gin.Context, in EchoInput) (out EchoOutput, err error) {
-	out.OriginalInput = in
-	return
-}
+	r.POST("/poll", api.PollCreateHandler)
 
-func generateSwagger(fn string, router *fastapi.Router) error {
-	swagger := router.EmitOpenAPIDefinition()
-	swagger.Info.Title = "Ranked Choice Voting API"
-
-	f, err := os.Create(fn)
-	if err != nil {
-		return err
-	}
-
-	defer f.Close()
-
-	jsonBytes, _ := json.MarshalIndent(swagger, "", "    ")
-	_, err = f.Write(jsonBytes)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("Wrote Swagger to %s\n", fn)
-
-	return nil
+	return r
 }
 
 func main() {
-	r := gin.Default()
-
-	router := fastapi.NewRouter()
-	router.AddCall("/echo", EchoHandler)
-
-	generateSwagger("swagger.json", router)
-
-	r.POST("/api/*path", router.GinHandler) // must have *path parameter
-	r.Run()
+	r := setupRouter()
+	// Listen and Server in 0.0.0.0:8080
+	r.Run(":8080")
 }
-
-// Try it:
-//     $ curl -H "Content-Type: application/json" -X POST --data '{"phrase": "hello"}' localhost:8080/api/echo
-//     {"response":{"original_input":{"phrase":"hello"}}}
