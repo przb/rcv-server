@@ -1,11 +1,12 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sashabaranov/go-fastapi"
-	"fmt"
-	"encoding/json"
-	"os"
 )
 
 type EchoInput struct {
@@ -24,12 +25,12 @@ func EchoHandler(ctx *gin.Context, in EchoInput) (out EchoOutput, err error) {
 func generateSwagger(fn string, router *fastapi.Router) error {
 	swagger := router.EmitOpenAPIDefinition()
 	swagger.Info.Title = "Ranked Choice Voting API"
-	
+
 	f, err := os.Create(fn)
 	if err != nil {
 		return err
 	}
-	
+
 	defer f.Close()
 
 	jsonBytes, _ := json.MarshalIndent(swagger, "", "    ")
@@ -37,11 +38,10 @@ func generateSwagger(fn string, router *fastapi.Router) error {
 	if err != nil {
 		return err
 	}
-	
+
 	fmt.Printf("Wrote Swagger to %s\n", fn)
 
 	return nil
-
 }
 
 func main() {
