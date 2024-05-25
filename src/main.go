@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/przb/rcv-server/api"
+	"github.com/przb/rcv-server/src/api"
 )
 
 func setupRouter() *gin.Engine {
