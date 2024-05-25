@@ -18,6 +18,7 @@ func setupRouter() *gin.Engine {
 	})
 
 	r.POST("/poll", api.PollCreateHandler)
+	r.GET("/poll", api.PollGetHandler)
 
 	return r
 }

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -34,14 +33,13 @@ type PollOutput struct {
 
 func pollInToPoll(i PollInput) (p Poll) {
 	p.Id = uuid.NewString()
-  p.Options = make(map[string]Option)
+	p.Options = make(map[string]Option)
 	for i, on := range i.Options {
 		o := Option{
 			Rank:     i,
 			Name:     on,
 			NumVotes: 0,
 		}
-    fmt.Println("appended option")
 		p.Options[on] = o
 	}
 	return
@@ -60,9 +58,19 @@ func PollCreateHandler(ctx *gin.Context) {
 
 	ctx.BindJSON(&in)
 	p := pollInToPoll(in)
-  db[p.Id] = p
+	db[p.Id] = p
 
 	out := pollToOutPoll(p)
 	ctx.IndentedJSON(http.StatusOK, out)
 	return
+}
+
+func PollGetHandler(ctx *gin.Context) {
+	id := ctx.Query("id")
+	val, ok := db[id]
+	if ok {
+		ctx.IndentedJSON(http.StatusOK, val)
+	} else {
+		ctx.JSON(http.StatusBadRequest, gin.H{"details": "Id not found"})
+	}
 }
