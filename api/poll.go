@@ -53,7 +53,7 @@ func pollToOutPoll(p Poll) (o PollOutput) {
 	return
 }
 
-func PollCreateHandler(ctx *gin.Context) {
+func PollCreate(ctx *gin.Context) {
 	var in PollInput
 
 	ctx.BindJSON(&in)
@@ -65,7 +65,7 @@ func PollCreateHandler(ctx *gin.Context) {
 	return
 }
 
-func PollGetHandler(ctx *gin.Context) {
+func PollGetResults(ctx *gin.Context) {
 	id := ctx.Query("id")
 	val, ok := db[id]
 	if ok {

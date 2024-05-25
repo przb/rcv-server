@@ -17,9 +17,10 @@ func setupRouter() *gin.Engine {
 		c.String(http.StatusOK, "pong")
 	})
 
-	r.POST("/poll", api.PollCreateHandler)
-	r.GET("/poll", api.PollGetHandler)
-
+	r.POST("/poll", api.PollCreate)
+	r.GET("/poll", api.PollGetResults)
+	r.POST("/vote", api.VoteSubmit)
+	r.GET("/vote", api.VoteGetOptions)
 	return r
 }
 
